@@ -18,6 +18,7 @@ typedef struct s_pos
 {
 	int	x;
 	int	y;
+	int keycode;
 }	t_pos;
 
 typedef struct s_test
@@ -62,5 +63,7 @@ int	ft_strlen(const char *str);
 char	*ft_strnstr(const char *haystack, const char *needle, size_t len);
 int key_press(int keycode,t_game *game);
 void pos_init(t_pos *pos);
+void	valid_move(t_game *game);
+void	back_pos(t_game *game);
 
 #endif

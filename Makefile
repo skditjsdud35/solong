@@ -7,13 +7,14 @@ CC 		= gcc
 
 CFLAGS 	= -Wall #-Wextra -Werror
 
-SRCS 	= ./test.c \
+SRCS 	= ./main.c \
 		  ./libft/get_next_line.c \
 		  ./libft/get_next_line_utils.c \
 		  ./libft/ft_strnstr.c \
 		  ./libft/ft_memcmp.c \
 		  ./draw.c \
-		  ./key_hook.c
+		  ./key_hook.c \
+		  ./move.c
 all: $(NAME)
 
 OBJS	= $(SRCS:.c=.o)

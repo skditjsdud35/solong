@@ -2,15 +2,10 @@
 
 void	init_test(t_test *tmp)
 {
-		printf("tmp i good\n");
 	tmp->width = 0;
-		printf("tmp in good\n");
 	tmp->height = 0;
-		printf("tmp ini good\n");
 	tmp->count_c = 0;
-		printf("tmp init good\n");
 	tmp->count_e = 0;
-		printf("tmp init! good\n");
 	tmp->count_p = 0;
 }
 
@@ -65,7 +60,6 @@ int	valid_map(char *title, t_game	*game)
 	int		fd;
 	char	*buf;
 
-
 	if (!ft_strnstr(title, ".ber",1000))
 		return (-1);
 	else
@@ -73,8 +67,10 @@ int	valid_map(char *title, t_game	*game)
 		fd = open(title, O_RDONLY);
 		if (fd < 0)
 			return (-1);
+
 		buf = get_next_line(fd);
 		game->tmp.width = ft_strlen(buf) - 1;
+
 		if (!valid_first(buf, game->tmp.width))
 			return (-1);
 		while (buf)
@@ -82,20 +78,19 @@ int	valid_map(char *title, t_game	*game)
 			printf("%s", buf);
 			if (game->tmp.width != ft_strlen(buf) - 1)
 			{
-				printf("tmp.width != ft_strlen(buf) - 1)");
+				printf("width Error\n");
 				return (-1);
 			}
 			if (buf[0] != '1')
 			{
-				printf("buf[0] != 1");
+				printf("first char is not wall\n");
 				return (-1);
 			}
 			if (buf[ft_strlen(buf) - 2] != '1')
 			{
-				printf("buf[ft_strlen(buf) - 2] != 1");
+				printf("last char is not wall\n");
 				return (-1);
 			}
-			printf("it's valid\n");
 			if (!valid_mid(&(game->tmp), buf, ft_strlen(buf) - 1))
 			{
 				printf("this\n");
@@ -109,7 +104,12 @@ int	valid_map(char *title, t_game	*game)
 			printf("something is 0\n");
 			return (0);
 		}
-		printf("it's valid?\n");
+		if (game->tmp.count_p > 1)
+		{
+			printf("player Error\n");
+			return (0);
+		}
+		//printf("it's valid?\n");
 		close(fd);
 	}
 	return (1);
@@ -133,36 +133,38 @@ char	**save_map(char *title, t_game *game)
 
 void	game_init(t_game *game)
 {
-		printf("i good\n");
 	game->mlx_ptr = mlx_init();
-		printf("in good\n");
-	game->win_ptr = mlx_new_window(game->mlx_ptr, 500, 500, "so_long");
-		printf("ini good\n");
+	game->win_ptr = mlx_new_window(game->mlx_ptr, (game->tmp.width) * 32, (game->tmp.height) * 32, "so_long");
+}
+
+int	exit_game(int keycode, int x, int y, void *param)
+{
+	(void)keycode;
+	(void)x;
+	(void)y;
+
+	exit(0);
 }
 
 int main(int argc, char **argv)
 {
 	t_game	game;
 
-	printf("good\n");
-	game_init(&game);
 	init_test(&(game.tmp));
-	printf("init good\n");
 	pos_init(&(game.pos));
-	printf("game init good\n");
-	
+
 	if (argc != 2)
 		return (0);
 	else
 	{
 		if (!valid_map(argv[1], &game))
 			return (0);
-		printf("valid map good\n");
 		game.map = save_map(argv[1], &game);
-		printf("save map good\n");
+		game_init(&game);
 		draw(&game);
-		printf("draw good\n");
-		mlx_hook(game.win_ptr, X_EVENT_KEY_PRESS, 0, &key_press, &(game));
+		mlx_hook(game.win_ptr, X_EVENT_KEY_PRESS, 0, &key_press, &game);
+		mlx_hook(game.win_ptr, 17, 0, &exit_game, &game);
+		//게임 종료할 때 exit만 해도되나? 메모리 해제하고 mlx 종료하고 그런거 안해도됨???
 		mlx_loop(game.mlx_ptr);
 	}
 	return (0);
